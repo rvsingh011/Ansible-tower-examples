@@ -3,7 +3,7 @@
 - hosts: all
 
   tasks:
-    - name: Install git - it's probably important
+    - name: Install wget - it's probably important
       become: true
       apt:
-        name: git
+        name: wget
