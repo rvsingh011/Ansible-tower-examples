@@ -6,4 +6,4 @@
     - name: Install cowsay - it's probably important
       become: true
       apt:
-        name: cowsay
+        name: git
