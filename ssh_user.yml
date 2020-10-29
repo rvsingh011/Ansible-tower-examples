@@ -3,6 +3,8 @@
 - hosts: all
 
   tasks:
-    - name: This is a hello-world example
-      debug:
-        msg: Your are running 'hello-world' example
+     - name: Install cowsay - it's probably important
+       become: true
+       apt:
+         name: cowsay
+  
