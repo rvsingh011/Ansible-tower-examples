@@ -1,1 +1,10 @@
 
+---
+
+- hosts: all
+
+  tasks:
+    - name: Install git - it's probably important
+      become: true
+      yum:
+        name: git
