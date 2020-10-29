@@ -3,7 +3,7 @@
 - hosts: all
 
   tasks:
-    - name: Install cowsay - it's probably important
+    - name: Install git - it's probably important
       become: true
       apt:
         name: git
