@@ -5,5 +5,5 @@
   tasks:
     - name: Install cowsay - it's probably important
       become: true
-      yum:
+      apt:
         name: git
