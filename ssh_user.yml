@@ -1,9 +1,25 @@
 ---
-
-- hosts: all
-
+- name: ansible uri test
+  hosts: all
+  vars:
+    destination_host: south.iaas.cloud.ibm.com
+    resource_path: v1/instances
+    instance_id: 0717_f3ee90-43da-b0e0-0e754215b33d
+    remaining_path: actions?version=2020-10-20&generation=2
+    iam_token: Bearer eyJraWQiOiIyMDIwMTAyMjE4MzMiLCJhbGciOiJSUzI1NiJ9.eyJpYW1faWQiOiJJQk1pZC01NTAwMDNZWUI3IiwiaWQiOiJJQk1pZC01NTAwMDNZWUI3IiwicmVhbG1pZCI6IklCTWlkIiwianRpIjoiMWM5OWI3MWEtZTJkMS00NWE2LWIwMjYtYWQ0MTRkNjNmYTBiIiwiaWRlbnRpZmllciI6IjU1MDAwM1lZQjciLCJnaXZlbl9uYW1lIjoiSmFuYXJkaGFuYSIsImZhbWlseV9uYW1lIjoiQW5pcGlyZWRkeSIsIm5hbWUiOiJKYW5hcmRoYW5hIEFuaXBpcmVkZHkiLCJlbWFpbCI6ImphbmFyZGhhbnJlZGR5QGluLmlibS5jb20iLCJzdWIiOiJqYW5hcmRoYW5yZWRkeUBpbi5pYm0uY29tIiwiYWNjb3VudCI6eyJ2YWxpZCI6dHJ1ZSwiYnNzIjoiNzY4YTQ0MmExZGJiNDI3OThjNjI0YWMyMDFmZDhkNWUiLCJpbXNfdXNlcl9pZCI6Ijc2OTc4NDEiLCJmcm96ZW4iOnRydWUsImltcyI6IjE5NDc5ODMifSwiaWF0IjoxNjA0MDQwNDk0LCJleHAiOjE2MDQwNDQwOTQsImlzcyI6Imh0dHBzOi8vaWFtLmNsb3VkLmlibS5jb20vaWRlbnRpdHkiLCJncmFudF90eXBlIjoidXJuOmlibTpwYXJhbXM6b2F1dGg6Z3JhbnQtdHlwZTphcGlrZXkiLCJzY29wZSI6ImlibSBvcGVuaWQiLCJjbGllbnRfaWQiOiJieCIsImFjciI6MSwiYW1yIjpbInB3ZCJdfQ.KZvBCwQ3QeuVaRipYF_Dih7bLgTHOnG3YAt95k8H_QtWjp6q0GSQ8Exlx-8W7w2OydpehWs2ntuM-xICLLuAmtS1Abm2nrk4chcVDAhu1yU-I1aogHaN9FTUSBeblJz8_HRF2rK3ZU9COULzCUFhwq2X5Qb1sqLmQz05YDjZrZzc-OP4v-PJIcf8phGOecCLeC7kXVEv2AOmqYik57xpBF8WObko7MZcQjf-PuOQo7y7sfhFPd6hoYb2C5Wy6IyI08DILs8ljOHn76YjINNXTwe1hplcr6X3RfJRUPXnL0slxAwit7yflRUe7q2FEY3BDgIZUBr6M_R6J90DBzvXFQ
   tasks:
-    - name: Install wget - it's probably important
-      become: true
-      apt:
-        name: wget
+    - name: REST API CALL / POST
+      uri:
+          url: https://{{ destination_host }}/{{ resource_path }}/{{instance_id}}/{{remaining_path}}
+          method: POST
+          headers: 
+            Authorization: "{{iam_token}}"
+          body_format: json
+          body: {'type': 'stop'}
+          status_code: 201
+      register: rest_post
+      ignore_errors: yes
+    - name: DEBUG / GOT INFO
+      debug:
+          msg: "{{ rest_post }}"
+      when: rest_post.status == 201
