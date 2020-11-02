@@ -15,7 +15,7 @@
           headers: 
             Authorization: "{{iam_token}}"
           body_format: json
-          body: {'type': 'stop'}
+          body: {'type': 'start'}
           status_code: 201
       register: rest_post
       ignore_errors: yes
