@@ -13,7 +13,7 @@
           url: https://{{ destination_host }}/{{ resource_path }}/{{instance_id}}/{{remaining_path}}
           method: POST
           headers: 
-            Authorization: "{{iam_token}}"
+            Authorization: "{{ lookup('env','IC_IAM_TOKEN') }}"
           body_format: json
           body: {'type': 'start'}
           status_code: 201
