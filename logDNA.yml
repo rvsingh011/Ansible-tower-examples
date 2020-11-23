@@ -3,7 +3,7 @@
   hosts: localhost
   vars:
     project_name: "ibm-observe"
-    secret_name: "LogDNA_ingestion_key"
+    secret_name: "logdna-ingestion-key"
     deployment_file_path: "https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml"
     zip_path: /tmp/kubeConfig-{{ cluster_id }}.zip
     kube_config_path: /tmp/kubeConfig-{{ cluster_id }}
