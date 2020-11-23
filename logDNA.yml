@@ -1,0 +1,27 @@
+- name: Create kubectl namespace
+  k8s:
+    name: "{{ project_name | lower }}" 
+    api_version: v1
+    kind: Namespace
+    state: present
+- name: create injection key
+  k8s:
+    state: present
+    definition: 
+      apiVersion: v1
+      kind: Secret
+      type: Opaque             
+      metadata:
+        name: "{{ secret_name }}"
+        namespace: "{{ project_name | lower }}"     
+      data:
+        config_data.json: "{{ LogDNA_ingestion_key }}"
+
+- name: LogDNA deployment
+
+  k8s:
+    api_version: v1
+    namespace: "{{ project_name | lower }}"
+    state: present
+    src: "{{ deployment_file_path }}"
+    
