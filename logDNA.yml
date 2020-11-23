@@ -1,27 +1,66 @@
-- name: Create kubectl namespace
-  k8s:
-    name: "{{ project_name | lower }}" 
-    api_version: v1
-    kind: Namespace
-    state: present
-- name: create injection key
-  k8s:
-    state: present
-    definition: 
-      apiVersion: v1
-      kind: Secret
-      type: Opaque             
-      metadata:
-        name: "{{ secret_name }}"
-        namespace: "{{ project_name | lower }}"     
-      data:
-        config_data.json: "{{ LogDNA_ingestion_key }}"
+---
+- name: installing logdna
+  hosts: localhost
+  vars:
+    project_name: "ibm-observe"
+    secret_name: "LogDNA_ingestion_key"
+    deployment_file_path: "https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml"
+    zip_path: /tmp/kubeConfig-{{ cluster_id }}.zip
+    kube_config_path: /tmp/kubeConfig-{{ cluster_id }}
+    IC_IAM_TOKEN: "{{ lookup('env','IC_IAM_TOKEN') }}"
+    IC_IAM_REFRESH_TOKEN: "{{ lookup('env','IC_IAM_REFRESH_TOKEN') }}"
+  tasks:
+    - name: Download kubeconfig
+      get_url:
+          url: https://containers.cloud.ibm.com/global/v1/clusters/{{ cluster_id }}/config
+          dest: "{{ zip_path }}"
+          headers: 
+            Authorization: "{{ lookup('env','IC_IAM_TOKEN') }}"
+            X-Auth-Refresh-Token: "{{ lookup('env','IC_IAM_REFRESH_TOKEN') }}"
+    - name: Delete earlier instances of kube config
+      file:
+        path: "{{ kube_config_path }}"
+        state: absent
+    - name: ansible create directory for unzip kubeconfig
+      file:
+        path: "{{ kube_config_path }}"
+        state: directory
+    - name: Unzip kube config 
+      shell:
+        cmd: /usr/bin/unzip "{{ zip_path }}" -d "{{ kube_config_path }}"
+    - name: Read config.yaml into kube_config var
+      shell:
+        cmd: find "{{kube_config_path}}" -name "*.yml"
+      register: kube_config
+    - name: Display the kubeconfig file path
+      debug:
+        var: kube_config.stdout    
+    - name: Create kubectl namespace
+      k8s:
+        kubeconfig: "{{ kube_config.stdout }}"
+        name: "{{ project_name | lower }}" 
+        api_version: v1
+        kind: Namespace
+        state: present
+    - name: create injection key
+      k8s:
+        kubeconfig: "{{ kube_config.stdout }}"
+        state: present
+        api_version: v1
+        namespace: "{{ project_name | lower }}"            
+        definition:
+          kind: Secret
+          metadata:
+            name: "{{ secret_name }}"       
+            config_data.json: "{{ LogDNA_ingestion_key }}"
+          spec:
+            type: Opaque  
 
-- name: LogDNA deployment
-
-  k8s:
-    api_version: v1
-    namespace: "{{ project_name | lower }}"
-    state: present
-    src: "{{ deployment_file_path }}"
+    - name: LogDNA deployment
+      k8s:
+        kubeconfig: "{{ kube_config.stdout }}"
+        api_version: v1
+        namespace: "{{ project_name | lower }}"
+        state: present
+        src: "{{ deployment_file_path }}"
     

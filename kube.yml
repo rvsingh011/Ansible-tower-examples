@@ -1,13 +1,13 @@
 - hosts: localhost
   vars:
-    zip_path: /tmp/kubeConfig-{{ cluster_id }}.zip
-    kube_config_path: /tmp/kubeConfig-{{ cluster_id }}
+    zip_path: /tmp/kubeConfig-burms2dd0gn5n25d9dt0.zip
+    kube_config_path: /tmp/kubeConfig-burms2dd0gn5n25d9dt0
     IC_IAM_TOKEN: "{{ lookup('env','IC_IAM_TOKEN') }}"
     IC_IAM_REFRESH_TOKEN: "{{ lookup('env','IC_IAM_REFRESH_TOKEN') }}"
   tasks:
     - name: Download kubeconfig
       get_url:
-          url: https://containers.cloud.ibm.com/global/v1/clusters/{{ cluster_id }}/config
+          url: https://containers.cloud.ibm.com/global/v1/clusters/burms2dd0gn5n25d9dt0/config
           dest: "{{ zip_path }}"
           headers: 
             Authorization: "{{ lookup('env','IC_IAM_TOKEN') }}"
@@ -25,11 +25,9 @@
         path: "{{ kube_config_path }}"
         state: directory
     - name: Unzip kube config 
-      unarchive:
-        src: "{{ zip_path }}"
-        dest: "{{ kube_config_path }}"
-        keep_newer: yes
-    - name: Read config.yaml
+      shell:
+        cmd: /usr/bin/unzip "{{ zip_path }}" -d "{{ kube_config_path }}"
+    - name: Read config.yaml into kube_config var
       shell:
         cmd: find "{{kube_config_path}}" -name "*.yml"
       register: kube_config
