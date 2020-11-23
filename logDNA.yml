@@ -2,9 +2,10 @@
 - name: installing logdna
   hosts: localhost
   vars:
+    cluster_id: "burms2dd0gn5n25d9dt0"
     project_name: "ibm-observe"
     secret_name: "logdna-ingestion-key"
-    deployment_file_path: "https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml"
+    # deployment_file_path: "https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml"
     zip_path: /tmp/kubeConfig-{{ cluster_id }}.zip
     kube_config_path: /tmp/kubeConfig-{{ cluster_id }}
     IC_IAM_TOKEN: "{{ lookup('env','IC_IAM_TOKEN') }}"
@@ -54,13 +55,28 @@
             name: "{{ secret_name }}"       
             config_data.json: "{{ LogDNA_ingestion_key }}"
           spec:
-            type: Opaque  
-
+            type: Opaque
     - name: LogDNA deployment
       k8s:
         kubeconfig: "{{ kube_config.stdout }}"
         api_version: v1
-        namespace: "{{ project_name | lower }}"
         state: present
-        src: "{{ deployment_file_path }}"
-    
+        definition: "{{ project_name | lower }}"
+        namespace: "{{ project_name | lower }}"
+      with_items: "{{ lookup('url', 'https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml', split_lines=False) | from_yaml }}"
+      when: item is not none
+      # k8s:
+      #   kubeconfig: "{{ kube_config.stdout }}"
+      #   api_version: v1
+      #   namespace: "{{ project_name | lower }}"
+      #   definition: "{{ lookup('url', 'https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml', split_lines=False) | from_yaml_all | list }}"                                              
+      #   when: item is not none  
+
+    # - name: Deploying the LogDNA to Kubernetes cluster.
+    #   become: yes
+    #   shell: 
+    #     cmd: kubectl apply -f https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml        
+
+                                                                                                                                                                                          
+          
+          
