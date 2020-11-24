@@ -63,7 +63,7 @@
         state: present
         definition: "{{ project_name | lower }}"
         namespace: "{{ project_name | lower }}"
-      with_items: "{{ lookup('url', 'https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml', split_lines=False) | from_yaml }}"
+      with_items: "{{ lookup('url', 'https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml', split_lines=False) | from_yaml_all | list }}"
       when: item is not none
       # k8s:
       #   kubeconfig: "{{ kube_config.stdout }}"
