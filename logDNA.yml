@@ -56,28 +56,28 @@
             config_data.json: "{{ LogDNA_ingestion_key }}"
           spec:
             type: Opaque
-    - name: LogDNA deployment
-      k8s:
-        kubeconfig: "{{ kube_config.stdout }}"
-        api_version: v1
-        state: present
-        kind: deployment
-        name: logdna
-        definition: "{{ item }}"
-        namespace: "{{ project_name | lower }}"
-      with_items: "{{ lookup('url', 'https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml', split_lines=False) | from_yaml_all | list }}"
-      when: item is not none
+
+    - name: Deploying the LogDNA on Kubernetes cluster.
+      become: yes
+      shell:
+        cmd: kubectl apply -f https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml        
+    # - name: LogDNA deployment
+    #   k8s:
+    #     kubeconfig: "{{ kube_config.stdout }}"
+    #     api_version: v1
+    #     state: present
+    #     kind: deployment
+    #     name: logdna
+    #     definition: "{{ item }}"
+    #     namespace: "{{ project_name | lower }}"
+    #   with_items: "{{ lookup('url', 'https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml', split_lines=False) | from_yaml_all | list }}"
+    #   when: item is not none
       # k8s:
       #   kubeconfig: "{{ kube_config.stdout }}"
       #   api_version: v1
       #   namespace: "{{ project_name | lower }}"
       #   definition: "{{ lookup('url', 'https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml', split_lines=False) | from_yaml_all | list }}"                                              
-      #   when: item is not none  
-
-    # - name: Deploying the LogDNA to Kubernetes cluster.
-    #   become: yes
-    #   shell: 
-    #     cmd: kubectl apply -f https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml        
+      #   when: item is not none        
 
                                                                                                                                                                                           
           
