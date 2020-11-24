@@ -61,7 +61,7 @@
         kubeconfig: "{{ kube_config.stdout }}"
         api_version: v1
         state: present
-        definition: "{{ project_name | lower }}"
+        definition: "{{ item }}"
         namespace: "{{ project_name | lower }}"
       with_items: "{{ lookup('url', 'https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml', split_lines=False) | from_yaml_all | list }}"
       when: item is not none
