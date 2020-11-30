@@ -61,14 +61,10 @@
 #       shell:
 #         cmd: export KUBECONFIG={{ kube_config.stdout }}
 
-    - name: Run test command
-      shell:
-        cmd: kubectl get all --kubeconfig {{ kube_config.stdout }}
+#     - name: Run test command
+#       shell:
+#         cmd: kubectl get all --kubeconfig {{ kube_config.stdout }}
 
     - name: Deploying the LogDNA on Kubernetes cluster.
       shell:
-        cmd: kubectl apply -f https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml        
-    
-    - name: Unset KUBECONFIG
-      shell:
-        cmd: unset KUBECONFIG                                                                                                                                                                        
+        cmd: kubectl apply -f https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml --kubeconfig {{ kube_config.stdout }}                                                                                                                                                          
