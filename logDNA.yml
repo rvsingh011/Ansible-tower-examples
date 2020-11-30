@@ -58,7 +58,6 @@
             type: Opaque
 
     - name: Deploying the LogDNA on Kubernetes cluster.
-      become: yes
       shell:
         cmd: kubectl apply -f https://assets.us-south.logging.cloud.ibm.com/clients/agent-resources.yaml        
     # - name: LogDNA deployment
