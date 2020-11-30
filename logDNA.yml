@@ -59,7 +59,7 @@
 
     - name: Export KUBECONFIG
       shell:
-        cmd: export KUBECONFIG="{{ kube_config.stdout }}"
+        cmd: export KUBECONFIG={{ kube_config.stdout }}
 
     - name: Run test command
       shell:
