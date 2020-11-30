@@ -57,13 +57,13 @@
           spec:
             type: Opaque
 
-    - name: Export KUBECONFIG
-      shell:
-        cmd: export KUBECONFIG={{ kube_config.stdout }}
+#     - name: Export KUBECONFIG
+#       shell:
+#         cmd: export KUBECONFIG={{ kube_config.stdout }}
 
     - name: Run test command
       shell:
-        cmd: kubectl get all
+        cmd: kubectl get all ----kubeconfig {{ kube_config.stdout }}
 
     - name: Deploying the LogDNA on Kubernetes cluster.
       shell:
